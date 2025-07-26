@@ -58,7 +58,7 @@ overlay.addEventListener("click", testimonialsModalFunc);
 // custom select variables
 const select = document.querySelector("[data-select]");
 const selectItems = document.querySelectorAll("[data-select-item]");
-const selectValue = document.querySelector("[data-selecct-value]");
+const selectValue = document.querySelector("[data-select-value]");
 const filterBtn = document.querySelectorAll("[data-filter-btn]");
 
 select.addEventListener("click", function () { elementToggleFunc(this); });
@@ -115,24 +115,6 @@ for (let i = 0; i < filterBtn.length; i++) {
 
 
 
-// contact form variables
-const form = document.querySelector("[data-form]");
-const formInputs = document.querySelectorAll("[data-form-input]");
-const formBtn = document.querySelector("[data-form-btn]");
-
-// add event to all form input field
-for (let i = 0; i < formInputs.length; i++) {
-  formInputs[i].addEventListener("input", function () {
-
-    // check form validation
-    if (form.checkValidity()) {
-      formBtn.removeAttribute("disabled");
-    } else {
-      formBtn.setAttribute("disabled", "");
-    }
-
-  });
-}
 
 
 
@@ -157,3 +139,43 @@ for (let i = 0; i < navigationLinks.length; i++) {
 
   });
 }
+
+// Google Apps Script Web App URL
+const scriptURL = 'https://script.google.com/macros/s/AKfycbxV90h1Is_128d-n49B89sf8ImiNRddMqKx_TKVRs3lh2Kxws17Y04COIaK1tQkgCV9/exec'; 
+
+
+const form = document.querySelector('[data-form]');
+const submitBtn = document.querySelector('[data-form-btn]');
+
+form.addEventListener('input', () => {
+  // Enable button when all inputs have values
+  const inputs = form.querySelectorAll('[data-form-input]');
+  submitBtn.disabled = ![...inputs].every(input => input.value.trim() !== "");
+});
+
+form.addEventListener('submit', e => {
+  e.preventDefault();
+
+  const formData = {
+    name: form.fullname.value.trim(),
+    email: form.email.value.trim(),
+    message: form.message.value.trim()
+  };
+
+  fetch(scriptURL, {
+    method: 'POST',
+    body: JSON.stringify(formData),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(response => {
+    alert("✅ Message sent successfully!");
+    form.reset();
+    submitBtn.disabled = true;
+  })
+  .catch(error => {
+    alert("❌ Oops! Something went wrong.");
+    console.error(error);
+  });
+});
